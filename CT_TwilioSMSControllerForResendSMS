@@ -1,0 +1,29 @@
+public without sharing class CT_TwilioSMSControllerForResendSMS {
+	// Twillio App Name: NYS DOH MMS -> nm-contact-tracing
+    public static HTTPResponse sendSms(String toPhoneNumber, String body, String fromPhNumber1){
+        String phNumber = toPhoneNumber;      
+        String accountSid = System.Label.CT_Twillio_Account_SID;
+        String token = System.Label.CT_Twillio_Auth_Token;
+        String fromPhNumber = fromPhNumber1;
+        
+        String smsBody = body;
+        HttpRequest req = new HttpRequest();
+        //req.setEndpoint(System.Label.NM_CT_Twilio_Endpoint+accountSid+'/SMS/Messages.json');
+        req.setEndpoint(System.Label.CT_Twilio_Endpoint+accountSid+'/Messages.json');
+        req.setMethod('POST');
+        String VERSION  = '3.2.0';
+        req.setHeader('X-Twilio-Client', 'salesforce-' + VERSION);
+        req.setHeader('User-Agent', 'twilio-salesforce/' + VERSION);
+        req.setHeader('Accept', 'application/json');
+        req.setHeader('Accept-Charset', 'utf-8');
+        req.setHeader('Authorization','Basic '+EncodingUtil.base64Encode(Blob.valueOf(accountSid+':' +token)));
+        System.debug('fromPhNumber::'+ fromPhNumber);
+        //req.setBody('To='+EncodingUtil.urlEncode(phNumber,'UTF-8')+'&From='+EncodingUtil.urlEncode(fromPhNumber,'UTF-8')+'&Body='+smsBody+'&SFUAT_IS_SANDBOX='+true);
+        
+        req.setBody('To='+EncodingUtil.urlEncode(phNumber,'UTF-8')+'&MessagingServiceSid='+System.Label.CT_Twilio_Messaging_Service_SID+'&Body='+smsBody);
+        
+        Http http = new Http();
+       
+        return http.send(req);
+    }
+}
